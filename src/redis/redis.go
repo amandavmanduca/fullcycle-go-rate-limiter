@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"context"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 type Config struct {
@@ -18,7 +19,7 @@ type Redis struct {
 	config Config
 }
 
-func NewRedis(config Config) (*Redis, error) {
+func NewRedis(ctx context.Context, config Config) (*Redis, error) {
 	client := &Redis{
 		client: redis.NewClient(&redis.Options{
 			Addr:     config.Host + ":" + config.Port,
@@ -26,15 +27,15 @@ func NewRedis(config Config) (*Redis, error) {
 			DB:       config.DB,
 		}),
 	}
-	if err := client.client.Ping().Err(); err != nil {
+	if err := client.client.Ping(ctx).Err(); err != nil {
 		return nil, err
 	}
 	return client, nil
 }
 
-func (r *Redis) GetClient() (*redis.Client, error) {
+func (r *Redis) GetClient(ctx context.Context) (*redis.Client, error) {
 	if r.client == nil {
-		reconnect, err := NewRedis(r.config)
+		reconnect, err := NewRedis(ctx, r.config)
 		if err != nil {
 			return nil, err
 		}
@@ -43,18 +44,18 @@ func (r *Redis) GetClient() (*redis.Client, error) {
 	return r.client, nil
 }
 
-func (r *Redis) Set(key string, value interface{}, expiration time.Duration) error {
-	client, err := r.GetClient()
+func (r *Redis) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	client, err := r.GetClient(ctx)
 	if err != nil {
 		return err
 	}
-	return client.Set(key, value, expiration).Err()
+	return client.Set(ctx, key, value, expiration).Err()
 }
 
-func (r *Redis) Get(key string) (interface{}, error) {
-	client, err := r.GetClient()
+func (r *Redis) Get(ctx context.Context, key string) (interface{}, error) {
+	client, err := r.GetClient(ctx)
 	if err != nil {
 		return "", err
 	}
-	return client.Get(key).Result()
+	return client.Get(ctx, key).Result()
 }

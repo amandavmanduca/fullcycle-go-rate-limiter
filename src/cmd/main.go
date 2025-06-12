@@ -1,27 +1,28 @@
 package main
 
 import (
+	"context"
 	"log"
-	"os"
 
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/containers"
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/handlers"
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/redis"
-	"github.com/joho/godotenv"
+	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/utils/env"
 )
 
 func main() {
-	err := godotenv.Load()
+	configs, err := env.GetConfigs(".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Failed to get configs: %v", err)
 		return
 	}
 
-	redis, err := redis.NewRedis(redis.Config{
-		Host:     os.Getenv("REDIS_HOST"),
-		Port:     os.Getenv("REDIS_PORT"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       0,
+	ctx := context.Background()
+	redis, err := redis.NewRedis(ctx, redis.Config{
+		Host:     configs.RedisHost,
+		Port:     configs.RedisPort,
+		Password: configs.RedisPassword,
+		DB:       configs.RedisDB,
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect to redis: %v", err)
@@ -29,7 +30,7 @@ func main() {
 	}
 
 	repositories := containers.NewRepositoryContainer(redis)
-	services := containers.NewServiceContainer(repositories)
+	services := containers.NewServiceContainer(configs, repositories)
 
-	handlers.Start(services)
+	handlers.Start(configs, services)
 }

@@ -8,3 +8,17 @@ services:
       - "6379:6379"
     environment:
       - REDIS_PASSWORD=password
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rate-limiter
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
