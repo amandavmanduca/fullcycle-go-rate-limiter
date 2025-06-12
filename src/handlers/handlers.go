@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/containers/service"
+	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/handlers/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,7 +19,9 @@ func NewHandler(services service.ServiceContainer) *handler {
 func Start(services service.ServiceContainer) {
 	e := echo.New()
 
-	e.Use(services.RateLimiterService.RateLimitMiddleware)
+	middlewares := middlewares.NewMiddleware(services)
+
+	e.Use(middlewares.RateLimitMiddleware)
 
 	h := NewHandler(services)
 	e.GET("/", h.Hello)

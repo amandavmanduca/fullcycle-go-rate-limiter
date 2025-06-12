@@ -1,13 +1,18 @@
-package rate_limiter
+package middlewares
 
 import (
 	"fmt"
 	"net/http"
 
+	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/interfaces"
 	"github.com/labstack/echo/v4"
 )
 
-func (s rateLimiterService) RateLimitMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+type middleware struct {
+	RateLimiterService interfaces.RateLimiterService
+}
+
+func (m middleware) RateLimitMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ip := c.RealIP()
 		apiKey := c.Request().Header.Get("API_KEY")
