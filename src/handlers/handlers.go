@@ -20,7 +20,7 @@ func NewHandler(services service.ServiceContainer) *handler {
 func Start(configs structs.Configs, services service.ServiceContainer) {
 	e := echo.New()
 
-	middlewares := middlewares.NewMiddleware(services)
+	middlewares := middlewares.NewMiddleware(configs, services)
 
 	e.Use(middlewares.RateLimitMiddleware)
 

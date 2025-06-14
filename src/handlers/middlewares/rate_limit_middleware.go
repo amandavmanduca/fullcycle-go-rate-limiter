@@ -9,6 +9,7 @@ import (
 
 type middleware struct {
 	RateLimiterService interfaces.RateLimiterService
+	ValidApiKey        string
 }
 
 func (m middleware) RateLimitMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
@@ -18,11 +19,21 @@ func (m middleware) RateLimitMiddleware(next echo.HandlerFunc) echo.HandlerFunc 
 		}
 		ctx := c.Request().Context()
 		ip := c.RealIP()
-		apiKey := c.Request().Header.Get("API_KEY")
-		err := m.RateLimiterService.CheckRateLimit(ctx, ip, apiKey)
+		foundKey := c.Request().Header.Get("API_KEY")
+		err := m.RateLimiterService.CheckRateLimit(ctx, ip, validApiKey(foundKey, m.ValidApiKey))
 		if err != nil {
 			return c.JSON(http.StatusTooManyRequests, map[string]string{"message": err.Error()})
 		}
 		return next(c)
 	}
+}
+
+func validApiKey(foundKey, apiKey string) string {
+	if foundKey == "" {
+		return ""
+	}
+	if foundKey == apiKey {
+		return foundKey
+	}
+	return ""
 }
