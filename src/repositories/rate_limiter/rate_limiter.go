@@ -1,6 +1,8 @@
 package rate_limiter
 
-import "github.com/amandavmanduca/fullcycle-go-rate-limiter/src/interfaces"
+import (
+	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/interfaces"
+)
 
 type rateLimiterRepository struct {
 	redis interfaces.Redis

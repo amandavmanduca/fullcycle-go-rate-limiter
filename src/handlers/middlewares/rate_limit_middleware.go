@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/interfaces"
@@ -14,12 +13,15 @@ type middleware struct {
 
 func (m middleware) RateLimitMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		if c.Path() == "/favicon.ico" {
+			return next(c)
+		}
+		ctx := c.Request().Context()
 		ip := c.RealIP()
 		apiKey := c.Request().Header.Get("API_KEY")
-		fmt.Println(apiKey)
-		fmt.Println(ip)
-		if apiKey == "" {
-			return c.JSON(http.StatusTooManyRequests, map[string]string{"message": "you have reached the maximum number of requests or actions allowed within a certain time frame"})
+		err := m.RateLimiterService.CheckRateLimit(ctx, ip, apiKey)
+		if err != nil {
+			return c.JSON(http.StatusTooManyRequests, map[string]string{"message": err.Error()})
 		}
 		return next(c)
 	}

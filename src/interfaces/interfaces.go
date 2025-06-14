@@ -6,11 +6,14 @@ import (
 )
 
 type RateLimiterService interface {
+	CheckRateLimit(ctx context.Context, ip string, apiKey string) error
 }
 
-type RateLimiterRepository interface{}
+type RateLimiterRepository interface {
+	Increment(ctx context.Context, key string, expiration time.Duration) (int64, error)
+}
 
 type Redis interface {
 	Get(ctx context.Context, key string) (interface{}, error)
-	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Incr(ctx context.Context, key string, expiration time.Duration) (int64, error)
 }

@@ -1,13 +1,17 @@
 package rate_limiter
 
 import (
+	"time"
+
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/interfaces"
 	"github.com/amandavmanduca/fullcycle-go-rate-limiter/src/structs"
 )
 
 type limits struct {
 	apiKeyRateLimit int
+	apiKeyDuration  time.Duration
 	ipRateLimit     int
+	ipDuration      time.Duration
 }
 
 type rateLimiterService struct {
@@ -20,7 +24,9 @@ func NewRateLimiterService(configs structs.Configs, repository interfaces.RateLi
 		rateLimiterRepository: repository,
 		limits: limits{
 			apiKeyRateLimit: configs.RateLimitApiKey,
-			ipRateLimit:     configs.RateLimitInterval,
+			apiKeyDuration:  configs.RateLimitApiKeyInterval,
+			ipRateLimit:     configs.RateLimitIp,
+			ipDuration:      configs.RateLimitIpInterval,
 		},
 	}
 }
