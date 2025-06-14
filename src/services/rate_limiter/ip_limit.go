@@ -1,6 +1,8 @@
 package rate_limiter
 
-import "context"
+import (
+	"context"
+)
 
 func (s *rateLimiterService) checkIPLimit(ctx context.Context, ip string) (bool, error) {
 	if s.limits.ipDuration == 0 {

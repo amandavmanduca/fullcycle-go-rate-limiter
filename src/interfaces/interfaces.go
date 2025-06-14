@@ -14,6 +14,5 @@ type RateLimiterRepository interface {
 }
 
 type Redis interface {
-	Get(ctx context.Context, key string) (interface{}, error)
 	Incr(ctx context.Context, key string, expiration time.Duration) (int64, error)
 }

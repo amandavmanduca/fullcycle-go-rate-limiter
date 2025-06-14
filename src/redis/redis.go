@@ -44,24 +44,12 @@ func (r *Redis) GetClient(ctx context.Context) (*redis.Client, error) {
 	return r.client, nil
 }
 
-func (r *Redis) Get(ctx context.Context, key string) (interface{}, error) {
-	client, err := r.GetClient(ctx)
-	if err != nil {
-		return "", err
-	}
-	return client.Get(ctx, key).Result()
-}
-
 func (r *Redis) Incr(ctx context.Context, key string, expiration time.Duration) (int64, error) {
 	client, err := r.GetClient(ctx)
 	if err != nil {
 		return 0, err
 	}
-	err = client.Incr(ctx, key).Err()
-	if err != nil {
-		return 0, err
-	}
-	val, err := client.Get(ctx, key).Int64()
+	val, err := client.Incr(ctx, key).Result()
 	if err != nil {
 		return 0, err
 	}
