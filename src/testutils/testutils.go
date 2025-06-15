@@ -10,8 +10,8 @@ import (
 func NewRedisDB() (*redis.Redis, error) {
 	return redis.NewRedis(context.Background(), redis.Config{
 		Host:     "localhost",
-		Port:     "6379",
-		Password: "password",
+		Port:     "6380",
+		Password: "redis-test",
 		DB:       0,
 	})
 }

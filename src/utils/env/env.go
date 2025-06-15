@@ -14,11 +14,11 @@ func GetConfigs(path string) (structs.Configs, error) {
 	if err != nil {
 		return structs.Configs{}, err
 	}
-	rateLimitInterval, err := strconv.Atoi(os.Getenv("IP_RATE_LIMIT_PER_SECOND"))
+	rateLimitInterval, err := strconv.Atoi(os.Getenv("IP_RATE_LIMIT"))
 	if err != nil {
 		return structs.Configs{}, err
 	}
-	rateLimitApiKey, err := strconv.Atoi(os.Getenv("API_KEY_RATE_LIMIT_PER_SECOND"))
+	rateLimitApiKey, err := strconv.Atoi(os.Getenv("API_KEY_RATE_LIMIT"))
 	if err != nil {
 		return structs.Configs{}, err
 	}
