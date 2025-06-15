@@ -22,7 +22,7 @@ func (s *rateLimiterService) CheckRateLimit(ctx context.Context, ip string, apiK
 		return nil
 	}
 
-	if validIP {
+	if validIP && apiKey == "" {
 		return nil
 	}
 
